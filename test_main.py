@@ -8,7 +8,7 @@ import pytest
 import main
 
 SECRET = 'abcdstring'
-TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NjEzMDY3OTAsIm5iZiI6MTU2MDA5NzE5MCwiZW1haWwiOiJ3b2xmQHRoZWRvb3IuY29tIn0.IpM4VMnqIgOoQeJxUbLT-cRcAjK41jronkVrqRLFmmk'
+TOKEN = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTM3Mzc2NjMsIm5iZiI6MTcxMjUyODA2MywiZW1haWwiOiJhYmNAeHl6LmNvbSJ9.ucX3x9eRgkfvsyQA6Lo6pKuHxFL-qZx6jL12xAnfZ6g'
 EMAIL = 'abc@xyz.com'
 PASSWORD = 'mypwd'
 
