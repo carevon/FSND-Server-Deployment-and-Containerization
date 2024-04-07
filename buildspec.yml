@@ -29,6 +29,7 @@ phases:
       - python --version
       - echo 'export PATH=$PWD/:$PATH' >> $HOME/.bashrc
       - echo `kubectl version --short --client`
+      - apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E88979FB9B30ACF2
       - python -m pip install --upgrade --force pip
       - apt-get update 
       - apt-get -y install jq  
