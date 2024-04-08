@@ -17,7 +17,7 @@ Parameters:
   GitSourceRepo:
     Type: String
     Description: GitHub source repository - must contain a Dockerfile and buildspec.yml in the base
-    Default: cd0157-Server-Deployment-and-Containerization
+    Default: FSND-Server-Deployment-and-Containerization
     MinLength: 1
     MaxLength: 100
     ConstraintDescription: You must enter a GitHub repository name
@@ -40,7 +40,7 @@ Parameters:
 
   GitHubUser:
     Type: String
-    Default: SudKul
+    Default: carevon
     Description: GitHub username or organization
     MinLength: 3
     MaxLength: 100
@@ -56,7 +56,7 @@ Parameters:
 
   KubectlRoleName:
     Type: String
-    Default: UdacityFlaskDeployCBKubectlRole
+    Default: UdacityFlaskDeployCBKubectlRole2
     Description: IAM role used by kubectl to interact with EKS cluster
     MinLength: 3
     MaxLength: 100
@@ -116,56 +116,11 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        ZipFile: |
-          import json
-          import boto3
-          import urllib3
-          def handler(event, context):
-            response = {
-              'Status': 'SUCCESS',
-              "Reason": "See the details in CloudWatch Log Stream: " + context.log_stream_name,
-              'PhysicalResourceId': context.log_stream_name,
-              'StackId': event['StackId'],
-              'RequestId': event['RequestId'],
-              'LogicalResourceId': event['LogicalResourceId'],
-              'Data': {"Message": "Resource creation successful!"},
-            }
-          
-            http = urllib3.PoolManager()
-            client = boto3.client('iam')
-            try:
-              if event['RequestType'] == 'Create':
-                kubectl_role_name = event['ResourceProperties']['KubectlRoleName']
-                build_role_arn = event['ResourceProperties']['CodeBuildServiceRoleArn']
-
-                assume = client.get_role(RoleName = kubectl_role_name)
-                assume_doc = assume['Role']['AssumeRolePolicyDocument']
-                roles = [ { 'Effect': 'Allow', 'Principal': { 'AWS': build_role_arn }, 'Action': 'sts:AssumeRole' } ]
-
-                for statement in assume_doc['Statement']:
-                  if 'AWS' in statement['Principal']:
-                    if statement['Principal']['AWS'].startswith('arn:aws:iam:'):
-                      roles.append(statement)
-
-                assume_doc['Statement'] = roles
-                update_response = client.update_assume_role_policy(RoleName = kubectl_role_name, PolicyDocument = json.dumps(assume_doc))
-            except Exception as e:
-              print(e)
-              response['Status'] = 'FAILED'
-              response["Reason"] = e
-              response['Data'] = {"Message": "Resource creation failed"}
-
-            response_body = json.dumps(response)
-            headers = {'Content-Type': 'application/json', "content-length": str(len(response_body)) }
-            put_response = http.request('PUT',
-                          event['ResponseURL'],
-                          body = response_body,
-                          headers=headers)
-            return response
-
-      Handler: index.handler
+        S3Bucket: "fsnd-udacity-lambda"
+        S3Key: "function.zip"
+      Handler: lambda_function.handler
       Role: !GetAtt CustomResourceLambdaExecutionRole.Arn
-      Runtime: python3.9
+      Runtime: python3.12
       Timeout: 300
 
   CustomResourceLambdaExecutionRole:
